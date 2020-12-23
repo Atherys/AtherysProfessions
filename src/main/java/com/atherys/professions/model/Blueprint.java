@@ -1,34 +1,27 @@
-package com.atherys.professions.config;
+package com.atherys.professions.model;
 
 import com.atherys.professions.api.CraftingType;
 import com.atherys.professions.api.CraftingTypes;
 import ninja.leaping.configurate.objectmapping.Setting;
-import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 import org.spongepowered.api.item.inventory.ItemStackSnapshot;
 import org.spongepowered.api.item.recipe.crafting.Ingredient;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@ConfigSerializable
-public class BlueprintConfig {
+public class Blueprint {
 
-    @Setting("id")
-    String id;
+    private String id;
 
-    @Setting("permission")
-    String permission;
+    private String permission;
 
-    @Setting("crafting-type")
-    CraftingType craftingType = CraftingTypes.CRAFTING_TABLE;
+    private CraftingType craftingType;
 
-    @Setting("ingredients")
-    List<BlueprintIngredientConfig> ingredients = new ArrayList<>();
+    private List<BlueprintIngredient> ingredients;
 
-    @Setting("result")
-    ItemStackSnapshot result;
+    private ItemStackSnapshot result;
 
-    public BlueprintConfig() {
+    public Blueprint() {
     }
 
     public String getId() {
@@ -55,11 +48,11 @@ public class BlueprintConfig {
         this.craftingType = craftingType;
     }
 
-    public List<BlueprintIngredientConfig> getIngredients() {
+    public List<BlueprintIngredient> getIngredients() {
         return ingredients;
     }
 
-    public void setIngredients(List<BlueprintIngredientConfig> ingredients) {
+    public void setIngredients(List<BlueprintIngredient> ingredients) {
         this.ingredients = ingredients;
     }
 

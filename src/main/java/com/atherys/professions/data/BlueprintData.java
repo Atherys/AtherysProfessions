@@ -23,7 +23,7 @@ public class BlueprintData extends AbstractData<BlueprintData, BlueprintData.Imm
 
     // if the blueprint is an original.
     // If this is true, the item representing the blueprint will not be consumed when crafting.
-    private Boolean isOriginal;
+    private boolean isOriginal;
 
     // Efficiency of the blueprint
     // This can be either positive, or negative.
@@ -32,17 +32,17 @@ public class BlueprintData extends AbstractData<BlueprintData, BlueprintData.Imm
     // +10% ( +0.10 ) with a blueprint which requires 10 wood planks = 9 wood planks
     // -10% ( -0.10 ) with a blueprint which requires 10 wood planks = 11 wood planks
     // Efficiency can be improved maybe?
-    private Double efficiency;
+    private double efficiency;
 
     {
         registerGettersAndSetters();
     }
 
-    BlueprintData() {
+    public BlueprintData() {
         blueprintId = "";
     }
 
-    BlueprintData(Boolean isOriginal, String blueprintId, Double efficiency) {
+    public BlueprintData(Boolean isOriginal, String blueprintId, Double efficiency) {
         this.isOriginal = isOriginal;
         this.blueprintId = blueprintId;
         this.efficiency = efficiency;
@@ -53,15 +53,17 @@ public class BlueprintData extends AbstractData<BlueprintData, BlueprintData.Imm
         registerFieldGetter(BlueprintKeys.IS_ORIGINAL, this::getIsOriginal);
         registerFieldSetter(BlueprintKeys.IS_ORIGINAL, this::setIsOriginal);
         registerKeyValue(BlueprintKeys.IS_ORIGINAL, this::isOriginal);
+
         registerFieldGetter(BlueprintKeys.BLUEPRINT_ID, this::getBlueprintId);
         registerFieldSetter(BlueprintKeys.BLUEPRINT_ID, this::setBlueprintId);
         registerKeyValue(BlueprintKeys.BLUEPRINT_ID, this::blueprintId);
+
         registerFieldGetter(BlueprintKeys.EFFICIENCY, this::getEfficiency);
         registerFieldSetter(BlueprintKeys.EFFICIENCY, this::setEfficiency);
         registerKeyValue(BlueprintKeys.EFFICIENCY, this::efficiency);
     }
 
-    public Boolean getIsOriginal() {
+    public boolean getIsOriginal() {
         return isOriginal;
     }
 
@@ -85,11 +87,11 @@ public class BlueprintData extends AbstractData<BlueprintData, BlueprintData.Imm
         return Sponge.getRegistry().getValueFactory().createValue(BlueprintKeys.BLUEPRINT_ID, blueprintId);
     }
 
-    public Double getEfficiency() {
+    public double getEfficiency() {
         return efficiency;
     }
 
-    public void setEfficiency(Double efficiency) {
+    public void setEfficiency(double efficiency) {
         this.efficiency = efficiency;
     }
 
@@ -114,9 +116,9 @@ public class BlueprintData extends AbstractData<BlueprintData, BlueprintData.Imm
     }
 
     public Optional<BlueprintData> from(DataView container) {
-        container.getObject(BlueprintKeys.IS_ORIGINAL.getQuery(), Boolean.class).ifPresent(v -> isOriginal = v);
-        container.getObject(BlueprintKeys.BLUEPRINT_ID.getQuery(), String.class).ifPresent(v -> blueprintId = v);
-        container.getObject(BlueprintKeys.EFFICIENCY.getQuery(), Double.class).ifPresent(v -> efficiency = v);
+        container.getBoolean(BlueprintKeys.IS_ORIGINAL.getQuery()).ifPresent(v -> isOriginal = v);
+        container.getString(BlueprintKeys.BLUEPRINT_ID.getQuery()).ifPresent(v -> blueprintId = v);
+        container.getDouble(BlueprintKeys.EFFICIENCY.getQuery()).ifPresent(v -> efficiency = v);
         return Optional.of(this);
     }
 
@@ -146,9 +148,9 @@ public class BlueprintData extends AbstractData<BlueprintData, BlueprintData.Imm
     @Generated(value = "flavor.pie.generator.data.DataManipulatorGenerator", date = "2020-12-18T20:31:47.641Z")
     public static class Immutable extends AbstractImmutableData<Immutable, BlueprintData> {
 
-        private Boolean isOriginal;
+        private boolean isOriginal;
         private String blueprintId;
-        private Double efficiency;
+        private double efficiency;
         {
             registerGetters();
         }
@@ -157,7 +159,7 @@ public class BlueprintData extends AbstractData<BlueprintData, BlueprintData.Imm
             blueprintId = "";
         }
 
-        Immutable(Boolean isOriginal, String blueprintId, Double efficiency) {
+        Immutable(boolean isOriginal, String blueprintId, double efficiency) {
             this.isOriginal = isOriginal;
             this.blueprintId = blueprintId;
             this.efficiency = efficiency;
@@ -173,7 +175,7 @@ public class BlueprintData extends AbstractData<BlueprintData, BlueprintData.Imm
             registerKeyValue(BlueprintKeys.EFFICIENCY, this::efficiency);
         }
 
-        public Boolean getIsOriginal() {
+        public boolean getIsOriginal() {
             return isOriginal;
         }
 
@@ -189,7 +191,7 @@ public class BlueprintData extends AbstractData<BlueprintData, BlueprintData.Imm
             return Sponge.getRegistry().getValueFactory().createValue(BlueprintKeys.BLUEPRINT_ID, blueprintId).asImmutable();
         }
 
-        public Double getEfficiency() {
+        public double getEfficiency() {
             return efficiency;
         }
 
@@ -220,7 +222,7 @@ public class BlueprintData extends AbstractData<BlueprintData, BlueprintData.Imm
     @Generated(value = "flavor.pie.generator.data.DataManipulatorGenerator", date = "2020-12-18T20:31:47.645Z")
     public static class Builder extends AbstractDataBuilder<BlueprintData> implements DataManipulatorBuilder<BlueprintData, Immutable> {
 
-        protected Builder() {
+        public Builder() {
             super(BlueprintData.class, 1);
         }
 

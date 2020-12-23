@@ -13,8 +13,12 @@ public class BlueprintsConfig extends PluginConfig {
 
     @Setting("blueprints")
     public List<BlueprintConfig> BLUEPRINTS = new ArrayList<>();
+    {
+        BLUEPRINTS.add(new BlueprintConfig());
+    }
 
     protected BlueprintsConfig() throws IOException {
         super("./config/atherysprofessions", "blueprints.conf");
+        init();
     }
 }

@@ -16,5 +16,6 @@ public class AtherysProfessionsConfig extends PluginConfig {
 
     protected AtherysProfessionsConfig() throws IOException {
         super("./config/atherysprofessions", "config.conf");
+        init();
     }
 }

@@ -12,10 +12,10 @@ public class BlueprintKeys {
 
     private BlueprintKeys() {}
 
-    public final static Key<Value<String>> BLUEPRINT_ID = KeyFactory.makeSingleKey(TypeToken.of(String.class), new TypeToken<Value<String>>(){}, DataQuery.of("BlueprintId"), "atherysprofessions:blueprintid", "Blueprint Id");
+    public static Key<Value<String>> BLUEPRINT_ID;
 
-    public final static Key<Value<Boolean>> IS_ORIGINAL = KeyFactory.makeSingleKey(TypeToken.of(Boolean.class), new TypeToken<Value<Boolean>>(){}, DataQuery.of("IsOriginal"), "atherysprofessions:isoriginal", "Is Original");
+    public static Key<Value<Boolean>> IS_ORIGINAL;
 
-    public final static Key<Value<Double>> EFFICIENCY = KeyFactory.makeSingleKey(TypeToken.of(Double.class), new TypeToken<Value<Double>>(){}, DataQuery.of("Efficiency"), "atherysprofessions:efficiency", "Efficiency");
+    public static Key<Value<Double>> EFFICIENCY;
 
 }
