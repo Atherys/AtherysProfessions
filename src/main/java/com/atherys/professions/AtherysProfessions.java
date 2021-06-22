@@ -3,35 +3,40 @@ package com.atherys.professions;
 import com.atherys.core.AtherysCore;
 import com.atherys.core.command.CommandService;
 import com.atherys.core.event.AtherysHibernateInitializedEvent;
-import com.atherys.core.facade.MessagingFacade;
 import com.atherys.professions.api.CraftingType;
 import com.atherys.professions.api.CraftingTypesRegistry;
 import com.atherys.professions.command.MakeBlueprintCommand;
-import com.atherys.professions.config.AtherysProfessionsConfig;
 import com.atherys.professions.config.BlueprintsConfig;
+import com.atherys.professions.config.RecipesConfig;
 import com.atherys.professions.data.BlueprintData;
 import com.atherys.professions.data.BlueprintKeys;
 import com.atherys.professions.facade.BlueprintFacade;
 import com.atherys.professions.facade.ProfessionsMessagingFacade;
 import com.atherys.professions.listener.CraftingListener;
+import com.atherys.professions.service.RecipeService;
 import com.google.common.reflect.TypeToken;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
-import com.google.inject.Singleton;
 import org.slf4j.Logger;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.DataQuery;
 import org.spongepowered.api.data.DataRegistration;
 import org.spongepowered.api.data.key.Key;
-import org.spongepowered.api.data.value.mutable.MapValue;
 import org.spongepowered.api.data.value.mutable.Value;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.game.GameRegistryEvent;
 import org.spongepowered.api.event.game.GameReloadEvent;
+import org.spongepowered.api.event.game.state.GameConstructionEvent;
 import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
 import org.spongepowered.api.event.game.state.GameStartedServerEvent;
 import org.spongepowered.api.event.game.state.GameStoppingServerEvent;
+import org.spongepowered.api.item.ItemTypes;
+import org.spongepowered.api.item.inventory.ItemStack;
+import org.spongepowered.api.item.recipe.Recipe;
+import org.spongepowered.api.item.recipe.crafting.CraftingRecipe;
+import org.spongepowered.api.item.recipe.crafting.Ingredient;
+import org.spongepowered.api.item.recipe.crafting.ShapelessCraftingRecipe;
 import org.spongepowered.api.plugin.Dependency;
 import org.spongepowered.api.plugin.Plugin;
 
@@ -41,14 +46,13 @@ import org.spongepowered.api.plugin.Plugin;
         description = "A professions plugin for the A'therys Horizons server",
         version = "%PROJECT_VERSION%",
         dependencies = {
-                @Dependency(id = "atheryscore")
+                @Dependency(id = "atheryscore"),
+                @Dependency(id = "atherysrpg")
         }
 )
 public class AtherysProfessions {
 
     private static AtherysProfessions instance;
-
-    private static boolean init = false;
 
     @Inject
     Logger logger;
@@ -64,8 +68,10 @@ public class AtherysProfessions {
         return instance;
     }
 
-    private void init() {
+    @Listener(order = Order.LATE)
+    public void onPreInit(GamePreInitializationEvent event) {
         instance = this;
+        Sponge.getRegistry().registerModule(CraftingType.class, new CraftingTypesRegistry());
 
         components = new Components();
 
@@ -79,43 +85,25 @@ public class AtherysProfessions {
         }
 
         Sponge.getEventManager().registerListeners(this, components.craftingListener);
-
-        init = true;
-    }
-
-    private void start() {
-        getBlueprintFacade().init();
-    }
-
-    private void stop() {
-
-    }
-
-    private void reload() {
-        components.config.load();
-        components.blueprintsConfig.load();
-
-        getBlueprintFacade().init();
-    }
-
-    @Listener
-    public void onInit(AtherysHibernateInitializedEvent event) {
-        init();
     }
 
     @Listener(order = Order.LATE)
     public void onStart(GameStartedServerEvent event) {
-        if (init) start();
+        getBlueprintFacade().init();
+    }
+
+    @Listener
+    public void onRegister(GameRegistryEvent.Register<CraftingRecipe> event) {
+        components.recipesConfig.load();
+        components.recipeService.loadRecipes(event);
     }
 
     @Listener
     public void onReload(GameReloadEvent event) {
-        if (init) reload();
-    }
+        components.config.load();
+        components.blueprintsConfig.load();
 
-    @Listener
-    public void onStop(GameStoppingServerEvent event) {
-        if (init) stop();
+        getBlueprintFacade().init();
     }
 
     @Listener
@@ -154,12 +142,6 @@ public class AtherysProfessions {
                 .build();
     }
 
-    @Listener
-    public void onPreInit(GamePreInitializationEvent event) {
-        // Register custom CatalogType registry modules
-        Sponge.getRegistry().registerModule(CraftingType.class, new CraftingTypesRegistry());
-    }
-
     public BlueprintFacade getBlueprintFacade() {
         return components.blueprintFacade;
     }
@@ -174,6 +156,12 @@ public class AtherysProfessions {
 
         @Inject
         BlueprintsConfig blueprintsConfig;
+
+        @Inject
+        RecipesConfig recipesConfig;
+
+        @Inject
+        RecipeService recipeService;
 
         @Inject
         ProfessionsMessagingFacade messagingFacade;
