@@ -2,7 +2,6 @@ package com.atherys.professions.api;
 
 import org.spongepowered.api.registry.CatalogRegistryModule;
 
-import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;

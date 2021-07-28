@@ -1,7 +1,5 @@
 package com.atherys.professions.data;
 
-import java.util.Optional;
-import javax.annotation.Generated;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.DataContainer;
 import org.spongepowered.api.data.DataHolder;
@@ -14,6 +12,9 @@ import org.spongepowered.api.data.persistence.AbstractDataBuilder;
 import org.spongepowered.api.data.persistence.InvalidDataException;
 import org.spongepowered.api.data.value.immutable.ImmutableValue;
 import org.spongepowered.api.data.value.mutable.Value;
+
+import javax.annotation.Generated;
+import java.util.Optional;
 
 @Generated(value = "flavor.pie.generator.data.DataManipulatorGenerator", date = "2020-12-18T20:31:47.616Z")
 public class BlueprintData extends AbstractData<BlueprintData, BlueprintData.Immutable> {
