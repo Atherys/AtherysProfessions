@@ -14,6 +14,7 @@ import org.spongepowered.api.event.filter.cause.Root;
 import org.spongepowered.api.event.item.inventory.ChangeInventoryEvent;
 import org.spongepowered.api.event.item.inventory.ClickInventoryEvent;
 import org.spongepowered.api.event.item.inventory.CraftItemEvent;
+import org.spongepowered.api.event.item.inventory.InteractItemEvent;
 import org.spongepowered.api.item.inventory.InventoryArchetype;
 import org.spongepowered.api.item.inventory.InventoryArchetypes;
 import org.spongepowered.api.item.inventory.InventoryProperty;
@@ -29,21 +30,9 @@ public class CraftingListener {
     Logger logger;
 
     @Listener
-    public void onCraft(ClickInventoryEvent event, @Root Player player) {
-        logger.info("{} {} {}", player.toString(), event.getTransactions().toString(), event.getTargetInventory().toString());
-        event.getTransactions().forEach(slotTransaction -> {
-            ItemStackSnapshot itemStackSnapshot = slotTransaction.getFinal();
-
-            itemStackSnapshot.get(BlueprintKeys.BLUEPRINT_ID).ifPresent(bpId -> {
-                blueprintFacade.applyBlueprint(
-                        bpId,
-                        itemStackSnapshot.get(BlueprintKeys.IS_ORIGINAL).orElse(false),
-                        itemStackSnapshot.get(BlueprintKeys.EFFICIENCY).orElse(0.0d),
-                        player,
-                        event.getTargetInventory(),
-                        event
-                );
-            });
+    public void onRightClick(InteractItemEvent.Secondary event, @Root Player player) {
+        event.getItemStack().get(BlueprintKeys.BLUEPRINT_ID).ifPresent(bpId -> {
+            blueprintFacade.applyBlueprint(bpId, player);
         });
     }
         // Player places blueprint into crafting inventory ( crafting table, anvil, furnace, etc. ).

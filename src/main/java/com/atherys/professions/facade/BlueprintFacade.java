@@ -1,27 +1,18 @@
 package com.atherys.professions.facade;
 
-import com.atherys.professions.api.CraftingType;
 import com.atherys.professions.api.exception.ProfessionsCommandException;
 import com.atherys.professions.config.BlueprintsConfig;
 import com.atherys.professions.data.BlueprintData;
 import com.atherys.professions.model.Blueprint;
-import com.atherys.professions.model.BlueprintIngredient;
+import com.atherys.professions.service.RecipeService;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import org.slf4j.Logger;
-import org.spongepowered.api.Sponge;
-import org.spongepowered.api.block.tileentity.carrier.BrewingStand;
-import org.spongepowered.api.data.DataTransactionResult;
-import org.spongepowered.api.data.type.Profession;
 import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.event.item.inventory.ChangeInventoryEvent;
-import org.spongepowered.api.event.item.inventory.ClickInventoryEvent;
-import org.spongepowered.api.event.item.inventory.CraftItemEvent;
 import org.spongepowered.api.item.inventory.Inventory;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.item.inventory.ItemStackSnapshot;
-import org.spongepowered.api.item.inventory.crafting.CraftingInventory;
 import org.spongepowered.api.item.inventory.equipment.EquipmentTypes;
+import org.spongepowered.api.item.inventory.query.QueryOperationTypes;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -36,7 +27,7 @@ public class BlueprintFacade {
     private ProfessionsMessagingFacade messagingFacade;
 
     @Inject
-    private Logger logger;
+    private RecipeService recipeService;
 
     private Map<String, Blueprint> blueprints = new HashMap<>();
 
@@ -45,19 +36,14 @@ public class BlueprintFacade {
 
         blueprintsConfig.BLUEPRINTS.forEach(bc -> {
             Blueprint bp = new Blueprint();
-            bp.setId(bc.getId());
-            bp.setPermission(bc.getPermission());
-            bp.setCraftingType(bc.getCraftingType());
             bp.setIngredients(
-                    bc.getIngredients().stream().map(bic -> {
-                        BlueprintIngredient blueprintIngredient = new BlueprintIngredient();
-                        blueprintIngredient.setAcceptableItems(bic.getAcceptableItems());
-                        return blueprintIngredient;
-                    }).collect(Collectors.toList())
+                    bc.INGREDIENTS.stream()
+                            .map(recipeService::getStackForItemConfig)
+                            .collect(Collectors.toList())
             );
-            bp.setResult(bc.getResult());
+            bp.setResult(recipeService.getStackForItemConfig(bc.RESULT));
 
-            blueprints.put(bc.getId(), bp);
+            blueprints.put(bc.ID, bp);
         });
     }
 
@@ -81,33 +67,23 @@ public class BlueprintFacade {
         equipped.get().offer(data).ifNotSuccessful(() -> new ProfessionsCommandException("Unable to add blueprint data to item."));
     }
 
-    public void applyBlueprint(String blueprintId, Boolean isOriginal, Double efficiency, Player player, Inventory targetInventory, ClickInventoryEvent event) {
+    public void applyBlueprint(String blueprintId, Player player) {
         Blueprint bp = blueprints.get(blueprintId);
 
         if (bp == null) {
             return;
         }
 
-        boolean isCorrectInventoryType = targetInventory.getArchetype().equals(bp.getCraftingType().getInventoryArchetype());
-
-        boolean isInventoryOfCraftingType = Sponge.getRegistry().getAllOf(CraftingType.class).stream()
-                .anyMatch(ct -> ct.getInventoryArchetype().equals(targetInventory.getArchetype()));
-
-        // If this is not the correct type of inventory for this blueprint, and is of another crafting inventory type, cancel the transfer event
-        // otherwise, if it's just not the correct type, but not of another crafting type, permit the transfer event, but don't craft ( to allow for chests, hoppers, etc. )
-        if (!isCorrectInventoryType && isInventoryOfCraftingType) {
-            messagingFacade.error(player, "This blueprint is meant to be used in a(n) ", bp.getCraftingType().getName());
-            event.setCancelled(true);
-            return;
-        } else if (!isCorrectInventoryType) {
-            return;
+        Inventory inventory = player.getInventory();
+        for (ItemStackSnapshot ingredient : bp.getIngredients()) {
+            if (!inventory.contains(ingredient.createStack())) {
+                return;
+            }
         }
 
-        // TODO: Calculate ingredients,
-        //  check for their existence in the player's inventory,
-        //  subtract the necessary amounts when the player selects to craft the blueprint's result ( clicks on the product in the inventory screen )
-
-        messagingFacade.info(player, "This will craft a ", bp.getResult().toString());
+        bp.getIngredients().forEach(itemStackSnapshot -> {
+            inventory.query(QueryOperationTypes.ITEM_STACK_IGNORE_QUANTITY.of(itemStackSnapshot.createStack())).poll(itemStackSnapshot.getQuantity());
+        });
 
         ItemStackSnapshot result = bp.getResult();
         ItemStack stack = result.createStack();

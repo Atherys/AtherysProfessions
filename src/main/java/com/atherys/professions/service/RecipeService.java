@@ -78,7 +78,7 @@ public class RecipeService {
                 .collect(Collectors.toList());
     }
 
-    private ItemStackSnapshot getStackForItemConfig(RecipeConfig.ItemConfig result) {
+    public ItemStackSnapshot getStackForItemConfig(RecipeConfig.ItemConfig result) {
         if (result.ITEM.isEmpty()) {
             return ItemStackSnapshot.NONE;
         }

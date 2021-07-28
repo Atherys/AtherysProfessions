@@ -6,15 +6,17 @@ import ninja.leaping.configurate.objectmapping.serialize.ConfigSerializable;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @ConfigSerializable
 public class BlueprintsConfig extends PluginConfig {
 
     @Setting("blueprints")
-    public List<BlueprintConfig> BLUEPRINTS = new ArrayList<>();
+    public List<RecipeConfig> BLUEPRINTS = new ArrayList<>();
     {
-        BLUEPRINTS.add(new BlueprintConfig());
+        BLUEPRINTS.add(new RecipeConfig());
     }
 
     protected BlueprintsConfig() throws IOException {
