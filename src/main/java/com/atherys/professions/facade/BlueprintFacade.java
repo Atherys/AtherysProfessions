@@ -5,6 +5,7 @@ import com.atherys.professions.config.BlueprintsConfig;
 import com.atherys.professions.data.BlueprintData;
 import com.atherys.professions.model.Blueprint;
 import com.atherys.professions.service.RecipeService;
+import com.atherys.rpg.AtherysRPG;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import org.spongepowered.api.entity.living.player.Player;
@@ -13,6 +14,7 @@ import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.item.inventory.ItemStackSnapshot;
 import org.spongepowered.api.item.inventory.equipment.EquipmentTypes;
 import org.spongepowered.api.item.inventory.query.QueryOperationTypes;
+import org.spongepowered.api.text.Text;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -39,13 +41,20 @@ public class BlueprintFacade {
         blueprintsConfig.BLUEPRINTS.forEach(bc -> {
             Blueprint bp = new Blueprint();
             bp.setIngredients(
-                    bc.INGREDIENTS.stream()
+                    bc.RECIPE.INGREDIENTS.stream()
                             .map(recipeService::getStackForItemConfig)
                             .collect(Collectors.toList())
             );
-            bp.setResult(recipeService.getStackForItemConfig(bc.RESULT));
+            bp.setResult(recipeService.getStackForItemConfig(bc.RECIPE.RESULT));
 
-            blueprints.put(bc.ID, bp);
+            blueprints.put(bc.RECIPE.ID, bp);
+
+            Map<String, ItemStackSnapshot> rpgItems = AtherysRPG.getInstance().getItemFacade().getCachedItems();
+            if (!bc.RPG_ITEM.isEmpty()) {
+                ItemStack item = rpgItems.get(bc.RPG_ITEM).createStack();
+                item.offer(new BlueprintData(true, bc.RECIPE.ID, 0.0));
+                AtherysRPG.getInstance().getItemFacade().registerItem(bc.RPG_ITEM, item.createSnapshot());
+            }
         });
     }
 
@@ -79,6 +88,7 @@ public class BlueprintFacade {
         Inventory inventory = player.getInventory();
         for (ItemStackSnapshot ingredient : bp.getIngredients()) {
             if (!inventory.contains(ingredient.createStack())) {
+                player.sendMessage(new ProfessionsCommandException((Text.of("You are missing ingredients for this blueprint."))).getText());
                 return;
             }
         }

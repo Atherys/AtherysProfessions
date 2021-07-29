@@ -12,9 +12,9 @@ import java.util.List;
 public class BlueprintsConfig extends PluginConfig {
 
     @Setting("blueprints")
-    public List<RecipeConfig> BLUEPRINTS = new ArrayList<>();
+    public List<BlueprintConfig> BLUEPRINTS = new ArrayList<>();
     {
-        BLUEPRINTS.add(new RecipeConfig());
+        BLUEPRINTS.add(new BlueprintConfig());
     }
 
     protected BlueprintsConfig() throws IOException {
