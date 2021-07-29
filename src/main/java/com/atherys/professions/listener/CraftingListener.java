@@ -6,6 +6,7 @@ import com.atherys.professions.facade.BlueprintFacade;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import org.slf4j.Logger;
+import org.spongepowered.api.data.type.HandTypes;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.filter.cause.Root;
@@ -23,7 +24,7 @@ public class CraftingListener {
     @Listener
     public void onRightClick(InteractItemEvent.Secondary event, @Root Player player) {
         event.getItemStack().get(BlueprintKeys.BLUEPRINT_ID).ifPresent(bpId -> {
-            blueprintFacade.applyBlueprint(bpId, player);
+            blueprintFacade.applyBlueprint(bpId, player, event.getHandType());
         });
     }
         // Player places blueprint into crafting inventory ( crafting table, anvil, furnace, etc. ).

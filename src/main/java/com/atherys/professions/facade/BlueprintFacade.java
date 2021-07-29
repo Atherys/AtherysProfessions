@@ -8,6 +8,7 @@ import com.atherys.professions.service.RecipeService;
 import com.atherys.rpg.AtherysRPG;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import org.spongepowered.api.data.type.HandType;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.item.inventory.Inventory;
 import org.spongepowered.api.item.inventory.ItemStack;
@@ -78,7 +79,7 @@ public class BlueprintFacade {
         equipped.get().offer(data).ifNotSuccessful(() -> new ProfessionsCommandException("Unable to add blueprint data to item."));
     }
 
-    public void applyBlueprint(String blueprintId, Player player) {
+    public void applyBlueprint(String blueprintId, Player player, HandType handType) {
         Blueprint bp = blueprints.get(blueprintId);
 
         if (bp == null) {
@@ -100,6 +101,6 @@ public class BlueprintFacade {
         ItemStackSnapshot result = bp.getResult();
         ItemStack stack = result.createStack();
 
-        player.getInventory().offer(stack);
+        player.setItemInHand(handType, stack);
     }
 }
