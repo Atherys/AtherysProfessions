@@ -26,8 +26,8 @@ import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.game.GameRegistryEvent;
 import org.spongepowered.api.event.game.GameReloadEvent;
+import org.spongepowered.api.event.game.state.GameInitializationEvent;
 import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
-import org.spongepowered.api.event.game.state.GameStartedServerEvent;
 import org.spongepowered.api.item.recipe.crafting.CraftingRecipe;
 import org.spongepowered.api.plugin.Dependency;
 import org.spongepowered.api.plugin.Plugin;
@@ -80,7 +80,7 @@ public class AtherysProfessions {
     }
 
     @Listener(order = Order.LATE)
-    public void onStart(GameStartedServerEvent event) {
+    public void onInit(GameInitializationEvent event) {
         getBlueprintFacade().init();
     }
 

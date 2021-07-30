@@ -51,7 +51,7 @@ public class BlueprintFacade {
             blueprints.put(bc.RECIPE.ID, bp);
 
             Map<String, ItemStackSnapshot> rpgItems = AtherysRPG.getInstance().getItemFacade().getCachedItems();
-            if (!bc.RPG_ITEM.isEmpty()) {
+            if (bc.RPG_ITEM != null && !bc.RPG_ITEM.isEmpty()) {
                 ItemStack item = rpgItems.get(bc.RPG_ITEM).createStack();
                 item.offer(new BlueprintData(true, bc.RECIPE.ID, 0.0));
                 AtherysRPG.getInstance().getItemFacade().registerItem(bc.RPG_ITEM, item.createSnapshot());
