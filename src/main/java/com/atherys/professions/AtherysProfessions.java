@@ -7,11 +7,14 @@ import com.atherys.professions.api.CraftingTypesRegistry;
 import com.atherys.professions.command.MakeBlueprintCommand;
 import com.atherys.professions.config.BlueprintsConfig;
 import com.atherys.professions.config.RecipesConfig;
+import com.atherys.professions.config.RepairsConfig;
 import com.atherys.professions.data.BlueprintData;
 import com.atherys.professions.data.BlueprintKeys;
 import com.atherys.professions.facade.BlueprintFacade;
 import com.atherys.professions.facade.ProfessionsMessagingFacade;
+import com.atherys.professions.listener.AnvilListener;
 import com.atherys.professions.listener.CraftingListener;
+import com.atherys.professions.listener.GrowthListener;
 import com.atherys.professions.service.RecipeService;
 import com.google.common.reflect.TypeToken;
 import com.google.inject.Inject;
@@ -77,6 +80,8 @@ public class AtherysProfessions {
         }
 
         Sponge.getEventManager().registerListeners(this, components.craftingListener);
+        Sponge.getEventManager().registerListeners(this, new GrowthListener());
+        Sponge.getEventManager().registerListeners(this, new AnvilListener());
     }
 
     @Listener(order = Order.LATE)
@@ -142,6 +147,10 @@ public class AtherysProfessions {
         return components.messagingFacade;
     }
 
+    public RepairsConfig getRepairsConfig() {
+        return components.repairsConfig;
+    }
+
     private static class Components {
         @Inject
         AtherysProfessionsConfig config;
@@ -151,6 +160,9 @@ public class AtherysProfessions {
 
         @Inject
         RecipesConfig recipesConfig;
+
+        @Inject
+        RepairsConfig repairsConfig;
 
         @Inject
         RecipeService recipeService;
