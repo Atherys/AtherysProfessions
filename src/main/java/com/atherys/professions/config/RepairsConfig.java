@@ -16,6 +16,7 @@ public class RepairsConfig extends PluginConfig {
         super("./config/atherysprofessions/", "repairs.conf");
     }
 
+    @Setting("repairs")
     public Map<ItemType, Double> REPAIR_PERCENTS = new HashMap<>();
 
     {
