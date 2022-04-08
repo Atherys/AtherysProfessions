@@ -152,6 +152,14 @@ public class AtherysProfessions {
         return components.repairsConfig;
     }
 
+    public Logger getLogger() {
+        return logger;
+    }
+
+    public AtherysProfessionsConfig getConfig() {
+        return components.config;
+    }
+
     private static class Components {
         @Inject
         AtherysProfessionsConfig config;
