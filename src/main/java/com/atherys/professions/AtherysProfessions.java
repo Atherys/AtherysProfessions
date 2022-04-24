@@ -88,6 +88,7 @@ public class AtherysProfessions {
     public void onInit(GameInitializationEvent event) {
         getBlueprintFacade().init();
         components.repairsConfig.load();
+        components.config.init();
     }
 
     @Listener
